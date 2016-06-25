@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "indent.h"
+#include "pppoe.h"
 #include "ip.h"
 
 int Ethernet_int(const unsigned char *frame_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int frame_length_uint) {
@@ -34,13 +35,15 @@ int Ethernet_int(const unsigned char *frame_uchar, FILE *output_FILE, unsigned i
 			}
 			case 0x8137: {
 				break;
-			}
+			}*/
 			case 0x8863: {
+				PPPOE_Discovery_int(frame_uchar + 14, output_FILE, xmlLevel_uint, frame_length_uint - 14);
 				break;
 			}
 			case 0x8864: {
+				PPPOE_Session_int(frame_uchar + 14, output_FILE, xmlLevel_uint, frame_length_uint - 14);
 				break;
-			}*/
+			}
 			default: {
 				Indent_void(output_FILE, *xmlLevel_uint);
 				fprintf(output_FILE, "<Payload> ");
