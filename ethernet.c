@@ -42,13 +42,13 @@ int Ethernet_int(const unsigned char *frame_uchar, FILE *output_FILE, unsigned i
 				break;
 			}*/
 			default: {
-				/*Indent_void(output_FILE, *xmlLevel_uint);
+				Indent_void(output_FILE, *xmlLevel_uint);
 				fprintf(output_FILE, "<Payload> ");
 				
 				upper_uint = frame_length_uint - 2;
 				for(frameIdx_uint = 14; frameIdx_uint < upper_uint; frameIdx_uint += 1)
 					fprintf(output_FILE, "%02hhx ", frame_uchar[frameIdx_uint]);
-				fprintf(output_FILE, "</Payload>\n");*/
+				fprintf(output_FILE, "</Payload>\n");
 				break;
 			}
 		}
@@ -57,13 +57,13 @@ int Ethernet_int(const unsigned char *frame_uchar, FILE *output_FILE, unsigned i
 		Indent_void(output_FILE, *xmlLevel_uint);
 		fprintf(output_FILE, "<Length> 0x%02hX <Length>\n", eType_ushort);
 		
-		/*Indent_void(output_FILE, *xmlLevel_uint);
+		Indent_void(output_FILE, *xmlLevel_uint);
 		fprintf(output_FILE, "<Payload> ");
 		
 		upper_uint = frame_length_uint - 2;
 		for(frameIdx_uint = 14; frameIdx_uint < upper_uint; frameIdx_uint += 1)
 			fprintf(output_FILE, "%02hhx ", frame_uchar[frameIdx_uint]);
-		fprintf(output_FILE, "</Payload>\n");*/
+		fprintf(output_FILE, "</Payload>\n");
 	}
 	
 	*xmlLevel_uint -= 1;

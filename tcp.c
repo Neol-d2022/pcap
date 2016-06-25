@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "indent.h"
+
 int TCP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint) {
 	unsigned short headerLength_ushort, payloadLength_ushort, idx_ushort;
 	
@@ -11,7 +13,6 @@ int TCP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *
 	
 	Indent_void(output_FILE, *xmlLevel_uint);
 	fprintf(output_FILE, "<TCP Packet>\n");
-	
 	*xmlLevel_uint += 1;
 	
 	Indent_void(output_FILE, *xmlLevel_uint);
@@ -92,4 +93,6 @@ int TCP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *
 	*xmlLevel_uint -= 1;
 	Indent_void(output_FILE, *xmlLevel_uint);
 	fprintf(output_FILE, "</TCP Packet>\n");
+	
+	return 0;
 }
