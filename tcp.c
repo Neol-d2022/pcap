@@ -22,13 +22,13 @@ int TCP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *
 	fprintf(output_FILE, "<Dst Port> %hu </Dst Port>\n", (unsigned short)((packet_uchar[2] << 8) + packet_uchar[3]));
 	
 	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Seq> %hu <Seq>\n", (unsigned int)((packet_uchar[4] << 24) + (packet_uchar[5] << 16) + (packet_uchar[6] << 8) + packet_uchar[7]));
+	fprintf(output_FILE, "<Seq> %hu </Seq>\n", (unsigned int)((packet_uchar[4] << 24) + (packet_uchar[5] << 16) + (packet_uchar[6] << 8) + packet_uchar[7]));
 	
 	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Ack> %hu <Ack>\n", (unsigned int)((packet_uchar[8] << 24) + (packet_uchar[9] << 16) + (packet_uchar[10] << 8) + packet_uchar[11]));
+	fprintf(output_FILE, "<Ack> %hu </Ack>\n", (unsigned int)((packet_uchar[8] << 24) + (packet_uchar[9] << 16) + (packet_uchar[10] << 8) + packet_uchar[11]));
 	
 	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Data Offset> %hhu <Data Offset>\n", (unsigned char)(headerLength_ushort >> 2));
+	fprintf(output_FILE, "<Data Offset> %hhu </Data Offset>\n", (unsigned char)(headerLength_ushort >> 2));
 	
 	Indent_void(output_FILE, *xmlLevel_uint);
 	fprintf(output_FILE, "<Flags>\n");
