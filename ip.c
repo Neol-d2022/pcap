@@ -5,108 +5,108 @@
 #include "tcp.h"
 #include "udp.h"
 
-int IP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint) {
-	unsigned short totalLength_ushort, payloadLength_ushort, headerLength_ushort, idx_ushort;
-	unsigned char proto_uchar, ihl_uchar;
-	//unsigned char cpy_uchar, optNum_uchar, optLen_uchar;
+int IP(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length) {
+	unsigned short totalLength, payloadLength, headerLength, idx;
+	unsigned char proto, ihl;
+	//unsigned char cpy, optNum, optLen;
 	
-	if(packet_length_uint < 20) return -1;
-	ihl_uchar = *packet_uchar & 0x0F;
-	totalLength_ushort = (packet_uchar[2] << 8) + packet_uchar[3];
-	if(totalLength_ushort > packet_length_uint) return -1;
-	headerLength_ushort = ihl_uchar << 2;
-	if(headerLength_ushort > totalLength_ushort) return -1;
-	payloadLength_ushort = totalLength_ushort - headerLength_ushort;
-	proto_uchar = packet_uchar[9];
+	if(packet_length < 20) return -1;
+	ihl = *packet & 0x0F;
+	totalLength = (packet[2] << 8) + packet[3];
+	if(totalLength > packet_length) return -1;
+	headerLength = ihl << 2;
+	if(headerLength > totalLength) return -1;
+	payloadLength = totalLength - headerLength;
+	proto = packet[9];
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<IP Packet>\n");
+	Indent(output, *xmlLevel);
+	fprintf(output, "<IP Packet>\n");
 	
-	*xmlLevel_uint += 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Version> %hhu </Version>\n", (unsigned char)(*packet_uchar >> 4));
+	*xmlLevel += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Version> %hhu </Version>\n", (unsigned char)(*packet >> 4));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<IHL> %hhu </IHL>\n", ihl_uchar);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<IHL> %hhu </IHL>\n", ihl);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<DSCP> %hhu </DSCP>\n", (unsigned char)(packet_uchar[1] >> 2));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<DSCP> %hhu </DSCP>\n", (unsigned char)(packet[1] >> 2));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<ECN> %hhu </ECN>\n", (unsigned char)(packet_uchar[1] & 0x03));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<ECN> %hhu </ECN>\n", (unsigned char)(packet[1] & 0x03));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Total Length> %hu </Total Length>\n", totalLength_ushort);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Total Length> %hu </Total Length>\n", totalLength);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Identification> %hu </Identification>\n", (unsigned short)((packet_uchar[4] << 8) + packet_uchar[5]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Identification> %hu </Identification>\n", (unsigned short)((packet[4] << 8) + packet[5]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Flags>\n");
-	*xmlLevel_uint += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Flags>\n");
+	*xmlLevel += 1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<DF> %hhu </DF>\n", (unsigned char)((packet_uchar[6] & 0x40) >> 6));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<DF> %hhu </DF>\n", (unsigned char)((packet[6] & 0x40) >> 6));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<MF> %hhu </MF>\n", (unsigned char)((packet_uchar[6] & 0x20) >> 5));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<MF> %hhu </MF>\n", (unsigned char)((packet[6] & 0x20) >> 5));
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</Flags>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</Flags>\n");
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<FO> %hu </FO>\n", (unsigned short)(((packet_uchar[6] & 0x1F) << 8) + packet_uchar[7]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<FO> %hu </FO>\n", (unsigned short)(((packet[6] & 0x1F) << 8) + packet[7]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<TTL> %hhu </TTL>\n", packet_uchar[8]);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<TTL> %hhu </TTL>\n", packet[8]);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Protocol> %hhu </Protocol>\n", proto_uchar);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Protocol> %hhu </Protocol>\n", proto);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Header Checksum> %hu </Header Checksum>\n", (unsigned short)((packet_uchar[10] << 8) + packet_uchar[11]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Header Checksum> %hu </Header Checksum>\n", (unsigned short)((packet[10] << 8) + packet[11]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Src IP Addr> %hhu.%hhu.%hhu.%hhu </Src IP Addr>\n", packet_uchar[12], packet_uchar[13], packet_uchar[14], packet_uchar[15]);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Src IP Addr> %hhu.%hhu.%hhu.%hhu </Src IP Addr>\n", packet[12], packet[13], packet[14], packet[15]);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Dst IP Addr> %hhu.%hhu.%hhu.%hhu </Dst IP Addr>\n", packet_uchar[16], packet_uchar[17], packet_uchar[18], packet_uchar[19]);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Dst IP Addr> %hhu.%hhu.%hhu.%hhu </Dst IP Addr>\n", packet[16], packet[17], packet[18], packet[19]);
 	
-	if(headerLength_ushort > 20) {
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Option Data> ");
-		for(idx_ushort = 20; idx_ushort < headerLength_ushort; idx_ushort += 1) {
-			fprintf(output_FILE, "%02hhx ", packet_uchar[idx_ushort]);
+	if(headerLength > 20) {
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Option Data> ");
+		for(idx = 20; idx < headerLength; idx += 1) {
+			fprintf(output, "%02hhx ", packet[idx]);
 		}
-		fprintf(output_FILE, "</Option Data>\n");
+		fprintf(output, "</Option Data>\n");
 	}
 	
-	switch(proto_uchar) {
+	switch(proto) {
 		/*case 1: {
 			
 		}*/
 		case 6: {
-			TCP_int(packet_uchar + headerLength_ushort, output_FILE, xmlLevel_uint, payloadLength_ushort);
+			TCP(packet + headerLength, output, xmlLevel, payloadLength);
 			break;
 		}
 		
 		case 17: {
-			UDP_int(packet_uchar + headerLength_ushort, output_FILE, xmlLevel_uint, payloadLength_ushort);
+			UDP(packet + headerLength, output, xmlLevel, payloadLength);
 			break;
 		}
 		default: {
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Payload Data> ");
-			for(idx_ushort = headerLength_ushort; idx_ushort < totalLength_ushort; idx_ushort += 1) {
-				fprintf(output_FILE, "%02hhx ", packet_uchar[idx_ushort]);
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Payload Data> ");
+			for(idx = headerLength; idx < totalLength; idx += 1) {
+				fprintf(output, "%02hhx ", packet[idx]);
 			}
-			fprintf(output_FILE, "</Payload Data>\n");
+			fprintf(output, "</Payload Data>\n");
 		}
 	}
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</IP Packet>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</IP Packet>\n");
 	return 0;
 }

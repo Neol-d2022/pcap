@@ -3,113 +3,113 @@
 #include "indent.h"
 #include "ppp.h"
 
-int PPPOE_Discovery_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint) {
-	unsigned short payloadLength_ushort, idx_ushort, tlvType_ushort, tlvLength_ushort, tlvDataUpper_ushort, tlvIdx_ushort;
-	unsigned char code_uchar;
+int PPPOE_Discovery(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length) {
+	unsigned short payloadLength, idx, tlvType, tlvLength, tlvDataUpper, tlvIdx;
+	unsigned char code;
 	
-	if(packet_length_uint < 6) return -1;
-	code_uchar = packet_uchar[1];
-	payloadLength_ushort = (packet_uchar[4] << 8) + packet_uchar[5];
-	if(payloadLength_ushort + 6u > packet_length_uint) return -1;
+	if(packet_length < 6) return -1;
+	code = packet[1];
+	payloadLength = (packet[4] << 8) + packet[5];
+	if(payloadLength + 6u > packet_length) return -1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<PPPoE Packet>\n");
-	*xmlLevel_uint += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<PPPoE Packet>\n");
+	*xmlLevel += 1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Version> %hhu </Version>\n", (unsigned char)(packet_uchar[0] >> 4));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Version> %hhu </Version>\n", (unsigned char)(packet[0] >> 4));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Type> %hhu </Type>\n", (unsigned char)(packet_uchar[0] & 0x0F));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Type> %hhu </Type>\n", (unsigned char)(packet[0] & 0x0F));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Code> %hhu </Code>\n", code_uchar);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Code> %hhu </Code>\n", code);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Session ID> %hu </Session ID>\n", (unsigned short)((packet_uchar[2] << 8) + packet_uchar[3]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Session ID> %hu </Session ID>\n", (unsigned short)((packet[2] << 8) + packet[3]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Length> %hu </Length>\n", payloadLength_ushort);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Length> %hu </Length>\n", payloadLength);
 	
-	if(payloadLength_ushort) {
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Tags>\n");
-		*xmlLevel_uint += 1;
+	if(payloadLength) {
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Tags>\n");
+		*xmlLevel += 1;
 		
-		for(idx_ushort = 6; idx_ushort < payloadLength_ushort; idx_ushort += 1) {
-			if(idx_ushort > payloadLength_ushort + 2) return -1;
-			tlvType_ushort = (packet_uchar[idx_ushort] << 8) + packet_uchar[idx_ushort + 1];
-			tlvLength_ushort = (packet_uchar[idx_ushort + 2] << 8) + packet_uchar[idx_ushort + 3];
-			tlvDataUpper_ushort = idx_ushort + 4 + tlvLength_ushort;
-			if(tlvDataUpper_ushort > payloadLength_ushort + 6) return -1;
+		for(idx = 6; idx < payloadLength; idx += 1) {
+			if(idx > payloadLength + 2) return -1;
+			tlvType = (packet[idx] << 8) + packet[idx + 1];
+			tlvLength = (packet[idx + 2] << 8) + packet[idx + 3];
+			tlvDataUpper = idx + 4 + tlvLength;
+			if(tlvDataUpper > payloadLength + 6) return -1;
 			
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Tag>\n");
-			*xmlLevel_uint += 1;
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Tag>\n");
+			*xmlLevel += 1;
 			
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Type> %hu </Type>\n", tlvType_ushort);
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Type> %hu </Type>\n", tlvType);
 			
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Length> %hu </Length>\n", tlvLength_ushort);
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Length> %hu </Length>\n", tlvLength);
 			
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Value> ");
-			for(tlvIdx_ushort = idx_ushort + 4; tlvIdx_ushort < tlvDataUpper_ushort; tlvIdx_ushort += 1) {
-				fprintf(output_FILE, "%02hhx ", packet_uchar[tlvIdx_ushort]);
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Value> ");
+			for(tlvIdx = idx + 4; tlvIdx < tlvDataUpper; tlvIdx += 1) {
+				fprintf(output, "%02hhx ", packet[tlvIdx]);
 			}
-			fprintf(output_FILE, "</Value>\n");
+			fprintf(output, "</Value>\n");
 			
-			*xmlLevel_uint -= 1;
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "</Tag>\n");
+			*xmlLevel -= 1;
+			Indent(output, *xmlLevel);
+			fprintf(output, "</Tag>\n");
 			
-			idx_ushort = tlvDataUpper_ushort;
+			idx = tlvDataUpper;
 		}
 		
-		*xmlLevel_uint -= 1;
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "</Tags>\n");
+		*xmlLevel -= 1;
+		Indent(output, *xmlLevel);
+		fprintf(output, "</Tags>\n");
 	}
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</PPPoE Packet>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</PPPoE Packet>\n");
 	return 0;
 }
 
-int PPPOE_Session_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint) {
-	unsigned short payloadLength_ushort;
-	unsigned char code_uchar;
+int PPPOE_Session(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length) {
+	unsigned short payloadLength;
+	unsigned char code;
 	
-	if(packet_length_uint < 6) return -1;
-	code_uchar = packet_uchar[1];
-	payloadLength_ushort = (packet_uchar[4] << 8) + packet_uchar[5];
-	if(payloadLength_ushort + 6u > packet_length_uint) return -1;
+	if(packet_length < 6) return -1;
+	code = packet[1];
+	payloadLength = (packet[4] << 8) + packet[5];
+	if(payloadLength + 6u > packet_length) return -1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<PPPoE Packet>\n");
-	*xmlLevel_uint += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<PPPoE Packet>\n");
+	*xmlLevel += 1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Version> %hhu </Version>\n", (unsigned char)(packet_uchar[0] >> 4));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Version> %hhu </Version>\n", (unsigned char)(packet[0] >> 4));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Type> %hhu </Type>\n", (unsigned char)(packet_uchar[0] & 0x0F));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Type> %hhu </Type>\n", (unsigned char)(packet[0] & 0x0F));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Code> %hhu </Code>\n", code_uchar);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Code> %hhu </Code>\n", code);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Session ID> %hu </Session ID>\n", (unsigned short)((packet_uchar[2] << 8) + packet_uchar[3]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Session ID> %hu </Session ID>\n", (unsigned short)((packet[2] << 8) + packet[3]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Length> %hu </Length>\n", payloadLength_ushort);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Length> %hu </Length>\n", payloadLength);
 	
-	PPP_int(packet_uchar + 6, output_FILE, xmlLevel_uint, payloadLength_ushort);
+	PPP(packet + 6, output, xmlLevel, payloadLength);
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</PPPoE Packet>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</PPPoE Packet>\n");
 	return 0;
 }

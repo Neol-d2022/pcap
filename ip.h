@@ -1,8 +1,8 @@
-#ifndef IP
-#define IP
+#ifndef IP_INCLUDE
+#define IP_INCLUDE
 
 #include <stdio.h>
 
-int IP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint);
+int IP(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length);
 
 #endif

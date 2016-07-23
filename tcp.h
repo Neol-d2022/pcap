@@ -1,6 +1,6 @@
-#ifndef TCP
-#define TCP
+#ifndef TCP_INCLUDE
+#define TCP_INCLUDE
 
-int TCP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint);
+int TCP(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length);
 
 #endif

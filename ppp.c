@@ -3,61 +3,61 @@
 #include "indent.h"
 #include "ip.h"
 
-int PPP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint) {
-	unsigned short idx_ushort = 0;
+int PPP(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length) {
+	unsigned short idx = 0;
 	
-	if(packet_length_uint < 6) {
-		fprintf(output_FILE, "%u/6.\n", packet_length_uint);
+	if(packet_length < 6) {
+		fprintf(output, "%u/6.\n", packet_length);
 		return -1;
 	}
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<PPP Packet>\n");
-	*xmlLevel_uint += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<PPP Packet>\n");
+	*xmlLevel += 1;
 	
-	if(packet_uchar[idx_ushort] == 0x7E) {
-		fprintf(output_FILE, "<Flag> 0x7E </Flag>\n");
-		idx_ushort = 1;
+	if(packet[idx] == 0x7E) {
+		fprintf(output, "<Flag> 0x7E </Flag>\n");
+		idx = 1;
 	}
 	else { }//Flag omitted
 	
-	if(packet_uchar[idx_ushort] != 0xff) { //address omitted
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Control> 0x%02hhX </Control>\n", packet_uchar[idx_ushort]);
+	if(packet[idx] != 0xff) { //address omitted
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Control> 0x%02hhX </Control>\n", packet[idx]);
 		
-		idx_ushort += 1;
+		idx += 1;
 	}
 	else {
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Address> 0xFF </Address>\n");
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Address> 0xFF </Address>\n");
 		
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Control> 0x%02hhX </Control>\n", packet_uchar[idx_ushort + 1]);
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Control> 0x%02hhX </Control>\n", packet[idx + 1]);
 		
-		idx_ushort += 2;
+		idx += 2;
 	}
 	
-	switch(packet_uchar[idx_ushort]) {
+	switch(packet[idx]) {
 		case 0x21: {
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Protocol> 0x0021 </Protocol>\n");
-			IP_int(packet_uchar + idx_ushort + 1, output_FILE, xmlLevel_uint, packet_length_uint - idx_ushort - 1);
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Protocol> 0x0021 </Protocol>\n");
+			IP(packet + idx + 1, output, xmlLevel, packet_length - idx - 1);
 			break;
 		}
 		default: {
-			Indent_void(output_FILE, *xmlLevel_uint);
-			fprintf(output_FILE, "<Data>");
+			Indent(output, *xmlLevel);
+			fprintf(output, "<Data>");
 			
-			for(; idx_ushort < packet_length_uint; idx_ushort += 1)
-				fprintf(output_FILE, "%02hhx ", packet_uchar[idx_ushort]);
+			for(; idx < packet_length; idx += 1)
+				fprintf(output, "%02hhx ", packet[idx]);
 			
-			fprintf(output_FILE, "</Data>\n");
+			fprintf(output, "</Data>\n");
 			break;
 		}
 	}
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</PPP Packet>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</PPP Packet>\n");
 	return 0;
 }

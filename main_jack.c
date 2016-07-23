@@ -5,12 +5,12 @@
 #include <pcap/pcap.h>
 
 int main(void) {
-	char errbuf_char[PCAP_ERRBUF_SIZE];
-	struct pcap_pkthdr header_pcap_pkthdr;
-	pcap_t *p_pcap_t;
-	const unsigned char *packet_uchar;
-	int res_int;
-	unsigned int i_uint;
+	char errbuf[PCAP_ERRBUF_SIZE];
+	struct pcap_pkthdr header;
+	pcap_t *p;
+	const unsigned char *packet;
+	int res;
+	unsigned int i;
 	
 	p_pcap_t = pcap_create("enp0s3", errbuf_char);
 	if(!p_pcap_t) {

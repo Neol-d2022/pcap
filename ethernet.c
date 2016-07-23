@@ -4,30 +4,30 @@
 #include "pppoe.h"
 #include "ip.h"
 
-int Ethernet_int(const unsigned char *frame_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int frame_length_uint) {
-	unsigned int frameIdx_uint, upper_uint;
-	unsigned short eType_ushort;
+int Ethernet(const unsigned char *frame, FILE *output, unsigned int *xmlLevel, unsigned int frame_length) {
+	unsigned int frameIdx, upper;
+	unsigned short eType;
 	
-	if(frame_length_uint < 64) return -1;
+	if(frame_length < 64) return -1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Ethernet Frame>\n");
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Ethernet Frame>\n");
 	
-	*xmlLevel_uint += 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Destination MAC> %02hhX:%02hhX:%02hhX:%02hhX:%02hhX:%02hhX </Destination MAC>\n", frame_uchar[0], frame_uchar[1], frame_uchar[2], frame_uchar[3], frame_uchar[4], frame_uchar[5]);
+	*xmlLevel += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Destination MAC> %02hhX:%02hhX:%02hhX:%02hhX:%02hhX:%02hhX </Destination MAC>\n", frame[0], frame[1], frame[2], frame[3], frame[4], frame[5]);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Source MAC> %02hhX:%02hhX:%02hhX:%02hhX:%02hhX:%02hhX </Source MAC>\n", frame_uchar[6], frame_uchar[7], frame_uchar[8], frame_uchar[9], frame_uchar[10], frame_uchar[11]);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Source MAC> %02hhX:%02hhX:%02hhX:%02hhX:%02hhX:%02hhX </Source MAC>\n", frame[6], frame[7], frame[8], frame[9], frame[10], frame[11]);
 	
-	eType_ushort = (frame_uchar[12] << 8) + frame_uchar[13];
-	if(eType_ushort >= 0x0800) {
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<EtherType> 0x%04hX </EtherType>\n", eType_ushort);
+	eType = (frame[12] << 8) + frame[13];
+	if(eType >= 0x0800) {
+		Indent(output, *xmlLevel);
+		fprintf(output, "<EtherType> 0x%04hX </EtherType>\n", eType);
 		
-		switch(eType_ushort) {
+		switch(eType) {
 			case 0x0800: {
-				IP_int(frame_uchar + 14, output_FILE, xmlLevel_uint, frame_length_uint - 14);
+				IP(frame + 14, output, xmlLevel, frame_length - 14);
 				break;
 			}
 			/*case 0x0806: {
@@ -37,40 +37,40 @@ int Ethernet_int(const unsigned char *frame_uchar, FILE *output_FILE, unsigned i
 				break;
 			}*/
 			case 0x8863: {
-				PPPOE_Discovery_int(frame_uchar + 14, output_FILE, xmlLevel_uint, frame_length_uint - 14);
+				PPPOE_Discovery(frame + 14, output, xmlLevel, frame_length - 14);
 				break;
 			}
 			case 0x8864: {
-				PPPOE_Session_int(frame_uchar + 14, output_FILE, xmlLevel_uint, frame_length_uint - 14);
+				PPPOE_Session(frame + 14, output, xmlLevel, frame_length - 14);
 				break;
 			}
 			default: {
-				Indent_void(output_FILE, *xmlLevel_uint);
-				fprintf(output_FILE, "<Payload> ");
+				Indent(output, *xmlLevel);
+				fprintf(output, "<Payload> ");
 				
-				upper_uint = frame_length_uint - 2;
-				for(frameIdx_uint = 14; frameIdx_uint < upper_uint; frameIdx_uint += 1)
-					fprintf(output_FILE, "%02hhx ", frame_uchar[frameIdx_uint]);
-				fprintf(output_FILE, "</Payload>\n");
+				upper = frame_length - 2;
+				for(frameIdx = 14; frameIdx < upper; frameIdx += 1)
+					fprintf(output, "%02hhx ", frame[frameIdx]);
+				fprintf(output, "</Payload>\n");
 				break;
 			}
 		}
 	}
 	else {
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Length> 0x%02hX <Length>\n", eType_ushort);
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Length> 0x%02hX <Length>\n", eType);
 		
-		Indent_void(output_FILE, *xmlLevel_uint);
-		fprintf(output_FILE, "<Payload> ");
+		Indent(output, *xmlLevel);
+		fprintf(output, "<Payload> ");
 		
-		upper_uint = frame_length_uint - 2;
-		for(frameIdx_uint = 14; frameIdx_uint < upper_uint; frameIdx_uint += 1)
-			fprintf(output_FILE, "%02hhx ", frame_uchar[frameIdx_uint]);
-		fprintf(output_FILE, "</Payload>\n");
+		upper = frame_length - 2;
+		for(frameIdx = 14; frameIdx < upper; frameIdx += 1)
+			fprintf(output, "%02hhx ", frame[frameIdx]);
+		fprintf(output, "</Payload>\n");
 	}
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</Ethernet Frame>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</Ethernet Frame>\n");
 	return 0;
 }

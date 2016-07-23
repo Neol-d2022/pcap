@@ -2,37 +2,37 @@
 
 #include "indent.h"
 
-int UDP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint) {
-	unsigned short totalLength_ushort, idx_ushort;
+int UDP(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length) {
+	unsigned short totalLength, idx;
 	
-	totalLength_ushort = (packet_uchar[4] << 8) + packet_uchar[5];
-	if(totalLength_ushort < 8 || totalLength_ushort > packet_length_uint) return -1;
+	totalLength = (packet[4] << 8) + packet[5];
+	if(totalLength < 8 || totalLength > packet_length) return -1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<UDP Packet>\n");
-	*xmlLevel_uint += 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "<UDP Packet>\n");
+	*xmlLevel += 1;
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Src Port> %hu </Src Port>\n", (unsigned short)((packet_uchar[0] << 8) + packet_uchar[1]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Src Port> %hu </Src Port>\n", (unsigned short)((packet[0] << 8) + packet[1]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Dst Port> %hu </Dst Port>\n", (unsigned short)((packet_uchar[2] << 8) + packet_uchar[3]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Dst Port> %hu </Dst Port>\n", (unsigned short)((packet[2] << 8) + packet[3]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Length> %hu </Length>\n", totalLength_ushort);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Length> %hu </Length>\n", totalLength);
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Checksum> %hu </Checksum>\n", (unsigned short)((packet_uchar[6] << 8) + packet_uchar[7]));
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Checksum> %hu </Checksum>\n", (unsigned short)((packet[6] << 8) + packet[7]));
 	
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "<Payload Data> ");
-	for(idx_ushort = 8; idx_ushort < totalLength_ushort; idx_ushort += 1) {
-		fprintf(output_FILE, "%02hhx ", packet_uchar[idx_ushort]);
+	Indent(output, *xmlLevel);
+	fprintf(output, "<Payload Data> ");
+	for(idx = 8; idx < totalLength; idx += 1) {
+		fprintf(output, "%02hhx ", packet[idx]);
 	}
-	fprintf(output_FILE, "</Payload Data>\n");
+	fprintf(output, "</Payload Data>\n");
 	
-	*xmlLevel_uint -= 1;
-	Indent_void(output_FILE, *xmlLevel_uint);
-	fprintf(output_FILE, "</UDP Packet>\n");
+	*xmlLevel -= 1;
+	Indent(output, *xmlLevel);
+	fprintf(output, "</UDP Packet>\n");
 	return 0;
 }

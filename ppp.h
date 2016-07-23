@@ -1,8 +1,8 @@
-#ifndef PPP
-#define PPP
+#ifndef PPP_INCLUDE
+#define PPP_INCLUDE
 
 #include <stdio.h>
 
-int PPP_int(const unsigned char *packet_uchar, FILE *output_FILE, unsigned int *xmlLevel_uint, unsigned int packet_length_uint);
+int PPP(const unsigned char *packet, FILE *output, unsigned int *xmlLevel, unsigned int packet_length);
 
 #endif
